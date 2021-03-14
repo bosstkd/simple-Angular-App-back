@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.myStudies.pjt.employee.EmployeeService;
 import com.myStudies.pjt.employee.model.Employee;
@@ -72,8 +74,13 @@ public class produitRestController {
 	
 	
 	@PostMapping("/prdInsert")
-	public Produit insertPrd(@RequestBody Produit p) {
-		return pr.save(p);
+	public ResponseEntity<Produit> insertPrd(@RequestBody Produit p) {
+		Produit produit = pr.save(p);
+		if(p == null) {
+			return ResponseEntity.noContent().build();
+		}
+		URI location = ServletUriComponentsBuilder.fromPath("/prd/{id}").buildAndExpand(produit.getId()).toUri();
+		return ResponseEntity.created(location).build();
 	}
 	
 	@DeleteMapping("/prdSupprimer/{id}")
